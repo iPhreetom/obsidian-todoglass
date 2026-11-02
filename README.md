@@ -2,11 +2,11 @@
 
 把当天 Obsidian 日记的 **【TODO】** 同步到 macOS 透明置顶浮窗。日记是唯一数据源，浮窗中的操作会直接写回 Markdown。
 
-[English](README.en.md) · [项目主页](https://todoglass-macos.fytmarryzwl.chatgpt.site) · [下载 v1.2.0](https://github.com/iPhreetom/obsidian-todoglass/releases/download/v1.2.0/TodoGlass-1.2.0-macOS.zip) · [全部版本](https://github.com/iPhreetom/obsidian-todoglass/releases) · [MIT 许可证](LICENSE)
+[English](README.en.md) · [项目主页](https://todoglass-macos.fytmarryzwl.chatgpt.site) · [下载 v1.2.1](https://github.com/iPhreetom/obsidian-todoglass/releases/download/v1.2.1/TodoGlass-1.2.1-macOS.zip) · [全部版本](https://github.com/iPhreetom/obsidian-todoglass/releases) · [MIT 许可证](LICENSE)
 
 ## 安装
 
-1. 从 [v1.2.0 发布页](https://github.com/iPhreetom/obsidian-todoglass/releases/tag/v1.2.0)下载并完整解压 **`TodoGlass-1.2.0-macOS.zip`**。
+1. 从 [v1.2.1 发布页](https://github.com/iPhreetom/obsidian-todoglass/releases/tag/v1.2.1)下载并完整解压 **`TodoGlass-1.2.1-macOS.zip`**。
 2. 双击 `安装 TodoGlass.command`，选择 Obsidian 仓库文件夹。
 3. 在 **Obsidian → 设置 → 第三方插件** 中启用 **TodoGlass**。若未出现，重新加载 Obsidian。
 
@@ -48,8 +48,8 @@
 ```markdown
 # 【TODO】
 - [ ] 写一篇文章
-  - [/] 整理思路
-  - [ ] 补充案例
+	- [/] 整理思路
+	- [ ] 补充案例
 - [x] 已完成的一件事
 
 # 【碎碎念】
@@ -59,6 +59,8 @@
 可识别 `TODO`、`【TODO】`、`To-do`、`待办`、`待办事项` 标题，也支持独立一行的 `【TODO】` 或 `**【TODO】**。填写自定义标题后只读取该标题。标题区域包含下级标题，遇到同级或更高标题结束；独立标签遇下一个标签或标题结束。只展示 checklist，不将普通段落或普通项目列表自动转成任务。多行任务的续行保留在原文中，浮窗编辑第一行文字。
 
 支持标准 Markdown 任务和层级缩进：`[ ]` 待办、`[/]` 进行中、`[x]` 完成、`[-]` 取消、`[>]` 延后。其他单字符标记保留，菜单操作后才转换。任务中的链接、日期和 block ID 均按原文保存，编辑时显示原始 Markdown。
+
+新增分支默认每级使用 **1 个真实 Tab**；已有空格缩进的分支沿用原格式，避免改变任务层级。
 
 今日日记不存在时，浮窗显示空状态；**新增第一条待办时**才创建日记，并使用核心日记模板。支持模板中的 `{{date}}`、`{{date:格式}}`、`{{time}}`、`{{time:格式}}`；不会执行 Templater 脚本。跨午夜自动切换至新一天，不自动搬运历史未完成任务。旧日期的编辑草稿会保留，但保存时拒绝写入并提示刷新。
 
@@ -90,7 +92,7 @@ npm run build:native
 npm run package
 ```
 
-`build:native` 直接调用 `swiftc`，输出包含 arm64 与 x86_64 的 universal AppKit/WKWebView 程序，并进行 ad hoc 签名。`package` 使用 macOS 的 `ditto`，生成 `dist/TodoGlass-1.2.0-macOS.zip` 和对应的 `source.zip`。Ubuntu 可运行类型检查、自动化测试和 JavaScript 插件构建，不能编译或打包原生浮窗。
+`build:native` 直接调用 `swiftc`，输出包含 arm64 与 x86_64 的 universal AppKit/WKWebView 程序，并进行 ad hoc 签名。`package` 使用 macOS 的 `ditto`，生成 `dist/TodoGlass-1.2.1-macOS.zip` 和对应的 `source.zip`。Ubuntu 可运行类型检查、自动化测试和 JavaScript 插件构建，不能编译或打包原生浮窗。
 
 实现遵循 [Obsidian Vault API](https://docs.obsidian.md/Plugins/Vault) 和 [Editor API](https://docs.obsidian.md/Plugins/Editor/Editor) 的文件修改方式。
 

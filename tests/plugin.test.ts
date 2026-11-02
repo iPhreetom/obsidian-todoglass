@@ -93,6 +93,18 @@ test('closed-note status, text, parent-child add and top-level add stay inside t
   assert.equal(f.app.vault.content.get(f.path), '# 今日\n## 【TODO】\n- [x] 重命名 [[项目]]\n  - [/] child\n  - [ ] new child\n- [ ] new root\n\n## Notes\n- [ ] unrelated\n');
 });
 
+test('the first child created through the plugin uses a real Tab and subsequent siblings retain that level', async t => {
+  const f = await fixture('## TODO\n- [ ] parent\n'); t.after(() => f.plugin.onunload());
+  let state = await f.access.state();
+  await f.access.handleAction({ type: 'add', path: f.path, parentId: state.tasks[0].id, text: 'first child' });
+  state = await f.access.state();
+  assert.equal(state.tasks[1].parentId, state.tasks[0].id);
+  await f.access.handleAction({ type: 'add', path: f.path, parentId: state.tasks[0].id, text: 'second child' });
+  assert.equal(f.app.vault.content.get(f.path), '## TODO\n- [ ] parent\n\t- [ ] first child\n\t- [ ] second child\n');
+  state = await f.access.state();
+  assert.deepEqual(state.tasks.slice(1).map(task => task.parentId), [state.tasks[0].id, state.tasks[0].id]);
+});
+
 test('external edits conflict safely and rendered IDs retain distinct snapshot versions', async t => {
   const source = '## TODO\n- [ ] duplicate\n- [ ] duplicate\n';
   const f = await fixture(source); t.after(() => f.plugin.onunload());

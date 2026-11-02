@@ -2,13 +2,13 @@
 
 Keep the **TODO section of today's Obsidian daily note** in a transparent, floating macOS window. Your Markdown note is the source of truth: edits, status changes and new tasks are written back to it.
 
-[中文](README.md) · [Website](https://todoglass-macos.fytmarryzwl.chatgpt.site) · [Download v1.2.0](https://github.com/iPhreetom/obsidian-todoglass/releases/download/v1.2.0/TodoGlass-1.2.0-macOS.zip) · [Releases](https://github.com/iPhreetom/obsidian-todoglass/releases) · [MIT license](LICENSE)
+[中文](README.md) · [Website](https://todoglass-macos.fytmarryzwl.chatgpt.site) · [Download v1.2.1](https://github.com/iPhreetom/obsidian-todoglass/releases/download/v1.2.1/TodoGlass-1.2.1-macOS.zip) · [Releases](https://github.com/iPhreetom/obsidian-todoglass/releases) · [MIT license](LICENSE)
 
 ## Install
 
 Requires **macOS 13+** and **Obsidian desktop 1.8.7+**. The native helper is a universal binary containing Apple Silicon and Intel architectures. **Obsidian must stay running.** Node.js and Xcode are only needed for development; normal use does not require Accessibility or Screen Recording permissions.
 
-1. Download **`TodoGlass-1.2.0-macOS.zip`** from the [v1.2.0 release](https://github.com/iPhreetom/obsidian-todoglass/releases/tag/v1.2.0) and extract the entire archive.
+1. Download **`TodoGlass-1.2.1-macOS.zip`** from the [v1.2.1 release](https://github.com/iPhreetom/obsidian-todoglass/releases/tag/v1.2.1) and extract the entire archive.
 2. Run **`安装 TodoGlass.command`** and select your Obsidian vault folder.
 3. Enable **TodoGlass** under **Settings → Community plugins**. Reload Obsidian if it does not appear.
 
@@ -40,8 +40,8 @@ The plugin reads the folder, date format and template configured in Obsidian's c
 ```markdown
 ## TODO
 - [ ] Write an article
-  - [/] Draft an outline
-  - [ ] Add examples
+	- [/] Draft an outline
+	- [ ] Add examples
 - [x] An already completed task
 
 ## Journal
@@ -51,6 +51,8 @@ Tasks in this section are outside the floating window's scope.
 Accepted default titles include `TODO`, `【TODO】`, `To-do`, `待办` and `待办事项`. Standalone `【TODO】` or `**【TODO】**` labels also work. Setting a custom title limits matching to that title. An ATX heading section includes its subheadings and ends at the next heading of equal or higher level; a standalone label ends at the next label or heading. Only checklist items are shown. Plain paragraphs and ordinary bullets are not converted into tasks.
 
 Task markers are `[ ]` TODO, `[/]` in progress, `[x]` done, `[-]` cancelled and `[>]` deferred. Other single-character markers are preserved until you choose a new status. Links, task metadata, dates and block IDs are preserved as raw Markdown. For multiline tasks, the window edits the first line and leaves continuation lines in the note.
+
+New branches use **one real Tab per nesting level** by default. Branches already indented with spaces retain their existing format so their hierarchy stays unchanged.
 
 If today's note is missing, it is created only when you add the first task. Core Daily notes templates support `{{date}}`, `{{date:format}}`, `{{time}}` and `{{time:format}}`; Templater scripts are not executed. The window switches to the new day at midnight without carrying old tasks forward. An old-date draft is kept, but saving it is rejected rather than redirected into the new day.
 
@@ -80,7 +82,7 @@ npm run build:native
 npm run package
 ```
 
-The native script calls `swiftc`, combines arm64 and x86_64 with `lipo` and applies an ad hoc signature. Packaging uses macOS `ditto` and produces `dist/TodoGlass-1.2.0-macOS.zip` and the matching source archive. Ubuntu can run type checking, tests and the JavaScript plugin build, but cannot build or package the native app.
+The native script calls `swiftc`, combines arm64 and x86_64 with `lipo` and applies an ad hoc signature. Packaging uses macOS `ditto` and produces `dist/TodoGlass-1.2.1-macOS.zip` and the matching source archive. Ubuntu can run type checking, tests and the JavaScript plugin build, but cannot build or package the native app.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the development and release process. Please use fictional notes and remove personal content, paths and tokens from issue reports.
 

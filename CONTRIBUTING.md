@@ -39,6 +39,7 @@ Copy the complete built plugin folder and native helper into a **disposable test
 ## Changes and validation
 
 - Preserve Markdown as the source of truth. Presentation order must never rewrite task order or hierarchy.
+- New branches use one real Tab per nesting level. Preserve the existing format of space-indented branches so adding a task does not change their hierarchy.
 - Apply edits to the live editor when it is open; otherwise use `Vault.process`. Keep snapshot identity, ambiguity detection and midnight guards intact.
 - Treat task text as text rather than executable HTML. Keep the bridge bound to loopback, validate its token/Host/Origin, and avoid logging task content or tokens.
 - Add regression coverage for changed behavior, especially duplicate lines, external edits, custom statuses, nested tasks, multiline continuations, live drafts and day rollover. Do not add tests that only restate the implementation.
@@ -54,7 +55,7 @@ Releases are produced by `.github/workflows/release.yml`. It can run when a `v*`
 
 1. Update the version consistently in `manifest.json`, `package.json`, `package-lock.json` and `native/Info.plist`. Update versioned README download links and release notes.
 2. Run the checks and native build, and verify installation/update in a disposable vault. Confirm both architectures are present; do not describe cross-compilation as an Intel device test.
-3. Push the reviewed commit and a matching tag, for example `v1.2.0`. A manual run must select an existing matching tag; it does not create a tag from an arbitrary branch.
+3. Push the reviewed commit and a matching tag, for example `v1.2.1`. A manual run must select an existing matching tag; it does not create a tag from an arbitrary branch.
 4. The release workflow validates the tag and version files before installing dependencies, running checks, building both components and packaging them. The build job has read-only repository permissions. A separate publish job receives only the verified release assets and has `contents: write` permission.
 5. It uploads `main.js`, `manifest.json`, the complete macOS ZIP, the source ZIP and `SHA256SUMS.txt` to a draft release, then publishes it after all uploads succeed. A retry resumes an existing draft by replacing only these generated assets; it preserves the title, body and any additional attachments. Replacing a same-named draft asset uses `gh release upload --clobber`, which deletes that old draft asset before uploading its replacement.
 6. For an already published release, a retry downloads and verifies the existing asset set and its checksums, then exits without changing remote files or metadata. An incomplete or inconsistent published release fails this check rather than being overwritten; inspect it manually or release a new version.

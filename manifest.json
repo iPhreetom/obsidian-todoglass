@@ -1,7 +1,7 @@
 {
   "id": "todoglass",
   "name": "TodoGlass",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "minAppVersion": "1.8.7",
   "description": "将当天日记的 TODO 双向同步到 macOS 透明置顶浮窗，支持层级折叠、编辑、状态和新增。",
   "author": "TodoGlass",

@@ -5,7 +5,8 @@ import { JSDOM, VirtualConsole } from 'jsdom';
 
 const docs = new URL('../docs/', import.meta.url);
 const REPOSITORY = 'https://github.com/iPhreetom/obsidian-todoglass';
-const DOWNLOAD = `${REPOSITORY}/releases/download/v1.2.0/TodoGlass-1.2.0-macOS.zip`;
+const VERSION = JSON.parse(readFileSync(new URL('../manifest.json', import.meta.url), 'utf8')).version;
+const DOWNLOAD = `${REPOSITORY}/releases/download/v${VERSION}/TodoGlass-${VERSION}-macOS.zip`;
 
 function site(t) {
   const networkAttempts = [], runtimeErrors = [];

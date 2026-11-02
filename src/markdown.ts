@@ -94,23 +94,62 @@ function standaloneLabel(line: string, options: TodoOptions = {}): string | null
   return !/^[-+*]\s/.test(text) && isWanted(text, options) ? text : null;
 }
 
-/** Mark fenced code/frontmatter so neither tasks nor section labels inside them can leak out. */
-function visibleLines(lines: string[]): boolean[] {
-  let fence: { char: string; length: number } | null = null;
+interface HiddenBlock { start: number; end: number; closed: boolean }
+
+/** Ignore source examples, including fences/comments nested inside a list. */
+function visibleLines(lines: string[], blocks = new Map<number, HiddenBlock>()): boolean[] {
+  let fence: { char: string; length: number; block: HiddenBlock } | null = null;
+  let comment: { close: string; block: HiddenBlock } | null = null;
+  const lists: Array<{ width: number; content: number }> = [];
   let frontmatter = lines[0]?.trim() === "---";
+  const yaml: HiddenBlock = { start: 0, end: lines.length, closed: false };
   return lines.map((line, index) => {
     if (frontmatter) {
-      if (index > 0 && /^(---|\.\.\.)\s*$/.test(line)) frontmatter = false;
+      blocks.set(index, yaml);
+      if (index > 0 && /^(---|\.\.\.)\s*$/.test(line)) { frontmatter = false; yaml.end = index + 1; yaml.closed = true; }
       return false;
     }
-    const match = /^ {0,3}(`{3,}|~{3,})(.*)$/.exec(line);
+    const match = /^([\t ]*)(`{3,}|~{3,})(.*)$/.exec(line);
     if (fence) {
-      if (match && match[1][0] === fence.char && match[1].length >= fence.length && !match[2].trim()) fence = null;
+      blocks.set(index, fence.block);
+      if (match && match[2][0] === fence.char && match[2].length >= fence.length && !match[3].trim()) {
+        fence.block.end = index + 1; fence.block.closed = true; fence = null;
+      }
       return false;
     }
-    if (match && !(match[1][0] === "`" && match[2].includes("`"))) {
-      fence = { char: match[1][0], length: match[1].length };
+    if (comment) {
+      blocks.set(index, comment.block);
+      if (line.includes(comment.close)) { comment.block.end = index + 1; comment.block.closed = true; comment = null; }
       return false;
+    }
+    const leading = /^[\t ]*/.exec(line)![0];
+    const width = indentation(leading);
+    if (heading(line) || (line.trim() && index > 0 && !lines[index - 1].trim() && width <= (lists[0]?.width ?? -1))) lists.length = 0;
+    // Four-space root code is literal, while an equally indented fence inside
+    // an established list can delimit a real nested source example.
+    const inListContent = lists.some(list => width >= list.content && width <= list.content + 3);
+    const canOpenBlock = width <= 3 || inListContent;
+    // Standalone comment blocks only; inline task metadata remains untouched.
+    const trimmed = line.trimStart();
+    const opener = canOpenBlock && trimmed.startsWith("<!--") ? { open: "<!--", close: "-->" }
+      : canOpenBlock && trimmed.startsWith("%%") ? { open: "%%", close: "%%" } : null;
+    if (opener) {
+      const closed = trimmed.includes(opener.close, opener.open.length);
+      const block: HiddenBlock = { start: index, end: closed ? index + 1 : lines.length, closed };
+      blocks.set(index, block);
+      if (!closed) comment = { close: opener.close, block };
+      return false;
+    }
+    if (canOpenBlock && match && !(match[2][0] === "`" && match[3].includes("`"))) {
+      const block: HiddenBlock = { start: index, end: lines.length, closed: false };
+      blocks.set(index, block);
+      fence = { char: match[2][0], length: match[2].length, block };
+      return false;
+    }
+    const list = /^([\t ]*)([-+*]|\d+[.)])([\t ]+)/.exec(line);
+    if (list) {
+      while (lists.length && lists[lists.length - 1].width >= width) lists.pop();
+      if (width <= 3 || inListContent) lists.push({ width, content: indentation(list[1] + list[2] + list[3]) });
     }
     return true;
   });
@@ -215,6 +254,37 @@ function markerForStatus(status: string): string {
   throw new Error("不支持的任务状态。");
 }
 
+function childIndent(document: TodoDocument, parent: TodoTask, lines: string[], visible: boolean[], end: number): string {
+  const parentWidth = indentation(parent.indent);
+  let shallowest: string | undefined;
+  for (let line = parent.line + 1; line < end; line++) {
+    if (!visible[line]) continue;
+    // Ordinary list items also establish a real child level. Skipping them can
+    // make an appended checkbox accidentally nest under the last ordinary item.
+    const list = /^([\t ]*)(?:[-+*]|\d+[.)])[\t ]+/.exec(lines[line]);
+    if (!list) continue;
+    const width = indentation(list[1]);
+    if (width > parentWidth && (shallowest === undefined || width < indentation(shallowest))) shallowest = list[1];
+  }
+  if (shallowest !== undefined) return shallowest;
+  // Keep established all-space branches consistent even when this leaf has no
+  // children yet. A new branch without such an edge defaults to one real Tab.
+  // Use the nearest shallower source list item, not only the displayed task
+  // parent: ordinary list wrappers are deliberately absent from the task tree.
+  let ancestorIndent: string | undefined;
+  for (let line = parent.line - 1; line > document.section!.startLine; line--) {
+    if (!visible[line]) continue;
+    if (heading(lines[line])) break;
+    const list = /^([\t ]*)(?:[-+*]|\d+[.)])[\t ]+/.exec(lines[line]);
+    if (list && indentation(list[1]) < parentWidth) { ancestorIndent = list[1]; break; }
+  }
+  if (/^ +$/.test(parent.indent) && ancestorIndent !== undefined && /^ *$/.test(ancestorIndent)) {
+    const unit = parent.indent.length - ancestorIndent.length;
+    if (unit >= 2 && unit <= 4) return parent.indent + " ".repeat(unit);
+  }
+  return parent.indent + "\t";
+}
+
 /** Apply inside Vault.process so reads and writes cannot race with the editor. */
 export function applyTodoAction(markdown: string, action: TodoAction, options: TodoOptions = {}): string {
   const document = parseTodoDocument(markdown, options);
@@ -241,18 +311,26 @@ export function applyTodoAction(markdown: string, action: TodoAction, options: T
   validateText(action.text);
   if (action.parent) {
     const parent = resolveTask(document, action.parent);
+    const blocks = new Map<number, HiddenBlock>();
+    const visible = visibleLines(lines, blocks);
     let insert = parent.line + 1;
     const parentWidth = indentation(parent.indent);
     // Insert after the complete indented subtree, including continuation paragraphs.
     while (insert < document.section!.endLine) {
+      const block = blocks.get(insert);
+      if (block) {
+        if (indentation(/^[\t ]*/.exec(lines[block.start])![0]) <= parentWidth) break;
+        if (!block.closed) throw new Error("父任务下的代码块或注释尚未闭合，请先在日记中补全后重试。");
+        insert = block.end;
+        continue;
+      }
       const line = lines[insert];
       if (line.trim() && indentation(/^\s*/.exec(line)![0]) <= parentWidth) break;
       insert++;
     }
     // Keep section separator blank lines after the new task.
     while (insert > parent.line + 1 && !lines[insert - 1].trim()) insert--;
-    const unit = parent.indent.includes("\t") ? "\t" : "  ";
-    insertLine(insert, `${parent.indent}${unit}- [ ] ${action.text}`);
+    insertLine(insert, `${childIndent(document, parent, lines, visible, insert)}- [ ] ${action.text}`);
     return render();
   }
   if (!document.section) {
