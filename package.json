@@ -1,0 +1,29 @@
+{
+  "name": "obsidian-todoglass",
+  "version": "1.2.0",
+  "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iPhreetom/obsidian-todoglass.git"
+  },
+  "homepage": "https://todoglass-macos.fytmarryzwl.chatgpt.site",
+  "bugs": {
+    "url": "https://github.com/iPhreetom/obsidian-todoglass/issues"
+  },
+  "description": "A macOS floating window for the TODO section of today's Obsidian daily note",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:native": "bash scripts/build-native.sh",
+    "typecheck": "tsc --noEmit",
+    "test": "node scripts/test.mjs",
+    "package": "node scripts/package.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "esbuild": "^0.25.0",
+    "jsdom": "^29.1.1",
+    "obsidian": "^1.8.7",
+    "typescript": "^5.8.0"
+  }
+}

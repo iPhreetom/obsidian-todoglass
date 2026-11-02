@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f4f5ef">
+  <meta name="description" content="TodoGlass：把当天 Obsidian 日记的 TODO，同步到 macOS 透明置顶浮窗。随手完成、编辑、新增子任务，改动写回原日记。MIT 开源，本地联动。">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="TodoGlass — 让待办，轻轻浮在桌面上。">
+  <meta property="og:description" content="一张日记。两处入口。你的 Obsidian 今日待办，现在轻轻浮在桌面上。">
+  <meta property="og:image" content="https://todoglass-macos.fytmarryzwl.chatgpt.site/og.svg">
+  <meta property="og:url" content="https://todoglass-macos.fytmarryzwl.chatgpt.site/">
+  <link rel="canonical" href="https://todoglass-macos.fytmarryzwl.chatgpt.site/">
+  <title>TodoGlass — 让待办，轻轻浮在桌面上。</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="styles.css">
+  <script src="config.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">跳到主要内容</a>
+<svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
+  <symbol id="i-external" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M5 17v4h14v-4"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+  <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4 5v6h6M4 11a8 8 0 1 1 2 7"/></symbol>
+  <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19C4 9 9 4 20 4c0 11-5 16-15 15Zm0 0L16 8"/></symbol>
+  <symbol id="i-mark" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><path d="m7.5 12 3 3 6-7"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="m8 7-5 5 5 5m8-10 5 5-5 5m-3-13-2 20"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 15v2"/></symbol>
+</defs></svg>
+<header class="site-header wrap">
+  <a class="brand" href="#" aria-label="TodoGlass 首页"><span class="brand-mark"><svg><use href="#i-mark"/></svg></span><span>TodoGlass<span class="brand-dot">.</span></span></a>
+  <nav aria-label="主导航"><a href="#demo">亲手试试</a><a href="#install">安装</a><a class="nav-source" data-link="repo" data-ready-label="GitHub ↗" data-loading-label="开源代码 · 发布中" href="#release-status" aria-disabled="true">开源代码 · 发布中</a></nav>
+</header>
+<main id="main">
+<section class="hero wrap" aria-labelledby="hero-title">
+  <div class="hero-copy">
+    <p class="eyebrow"><span class="small-dot"></span> OBSIDIAN × macOS <span class="eyebrow-version">v1.2.0</span></p>
+    <h1 id="hero-title">让待办，<br><span>轻轻浮在</span><br>桌面上。</h1>
+    <p class="hero-description">日记照常写，今天的事随手做。<br>一扇真正透明的小窗，让 Obsidian 里的待办<br class="desktop-br">陪你待在正在工作的地方。</p>
+    <div class="hero-actions"><a class="button primary" data-link="download" data-ready-label="下载 macOS 版" data-loading-label="下载准备中" href="#release-status" aria-disabled="true"><svg><use href="#i-download"/></svg><span>下载准备中</span></a><a class="text-link" href="#demo">先试一试 <svg><use href="#i-arrow"/></svg></a></div>
+    <p class="compatibility">macOS 13+ <span>·</span> Apple Silicon / Intel <span>·</span> MIT 开源</p>
+    <div class="hero-note"><svg><use href="#i-leaf"/></svg><span>轻一点，也能把今天放在心上。</span></div>
+  </div>
+  <div class="hero-visual" id="demo">
+    <div class="scene-heading"><span><span class="live-dot"></span> 一小块桌面，留给今天</span><button class="reset-demo" id="resetDemo" type="button"><svg><use href="#i-reset"/></svg>重置演示</button></div>
+    <div class="desktop-scene" aria-label="可互动的 TodoGlass 桌面演示">
+      <div class="desktop-top"><span class="desktop-apple">●</span><span>今日工作台</span><span class="desktop-clock">留一点专注的时间</span></div>
+      <div class="desktop-orbit orbit-one"></div><div class="desktop-orbit orbit-two"></div>
+      <article class="workbench-paper" aria-hidden="true">
+        <div class="paper-top"><span class="paper-glyph">✳</span><span>MY QUIET SPACE</span><span>01 / 01</span></div>
+        <h2>今日工作台<span>一件一件，慢慢完成。</span></h2>
+        <div class="paper-rule"></div>
+        <div class="paper-small-title">TODAY, WITH INTENTION</div>
+        <p class="paper-big-words">给灵感留白，<br>给生活一点<br><i>轻盈。</i></p>
+        <div class="paper-bottom"><span>读一点书 · 写一点字 · 喝一杯水</span><div class="paper-lines"><i></i><i></i><i></i></div></div>
+      </article>
+      <aside class="glass-window" id="glassWindow" aria-label="TodoGlass 交互演示浮窗">
+        <div class="window-top"><span class="window-brand"><svg><use href="#i-mark"/></svg> TODOGLASS</span><span class="window-top-spacer"></span><button class="window-icon" id="collapseDemo" type="button" aria-label="收起演示浮窗" aria-expanded="true"><svg><use href="#i-chevron"/></svg></button><span class="window-dots" aria-hidden="true">···</span></div>
+        <div class="window-main" id="windowMain"><div class="window-title"><h3>今日待办<span>.</span></h3><span>属于今天</span></div><div class="window-progress"><div><i id="demoProgress"></i></div><span id="demoProgressLabel">1 / 5 已完成</span></div><div id="demoTasks" class="demo-tasks"></div><div id="demoRootComposer" class="demo-root-composer"></div><div class="window-footer"><span class="tiny-dot"></span>今日日记.md <svg><use href="#i-external"/></svg></div></div>
+      </aside>
+      <div class="desktop-dock" aria-hidden="true"><span class="dock-icon dock-note">✎</span><span class="dock-icon dock-leaf"><svg><use href="#i-leaf"/></svg></span><span class="dock-icon dock-obsidian">◆</span><i></i><span class="dock-icon dock-todo"><svg><use href="#i-mark"/></svg></span></div>
+    </div>
+    <div class="demo-controls"><label for="demoOpacity">背景不透明度 <output id="opacityValue" for="demoOpacity">12%</output></label><input type="range" id="demoOpacity" min="0" max="100" value="12" aria-describedby="opacityHint"><span id="opacityHint">0% 完全透明 · 100% 实色</span></div>
+    <p class="demo-disclaimer"><span class="demo-badge">交互演示</span> 所有内容均为合成示例，不连接你的 Obsidian 仓库。<br><span class="demo-tip">点复选框完成任务，点 ＋ 在任务下新增子任务；试试拖动透明度。</span></p>
+    <p class="demo-status" id="demoStatus" role="status" aria-live="polite"></p>
+  </div>
+</section>
+<section class="intro-statement wrap" aria-labelledby="intro-title"><p class="eyebrow">A LITTLE LESS SWITCHING</p><div class="statement-grid"><h2 id="intro-title">不离开手头的事，<br>也不忘记今天的事。</h2><p>一条待办，不必总在切换窗口之后才想起。<br>TodoGlass 把当天日记里的清单轻轻托起：<br>看得见，顺手做，完成就回到原文。<br><span>你的工作流，多了一点从容。</span></p></div></section>
+<section class="sync-story" aria-labelledby="sync-title"><div class="wrap sync-grid">
+  <div class="note-sample"><div class="note-sample-top"><span class="obsidian-gem">◆</span><span>今日日记.md</span><span class="sample-label">合成示例</span></div><div class="note-code"><p><span class="md-hash">##</span> 【TODO】</p><p><span class="md-symbol">- [ ]</span> 把灵感变成一个小计划</p><p class="md-indent"><span class="md-symbol">- [/]</span> 写下三个想法</p><p class="md-indent"><span class="md-symbol">- [ ]</span> 挑选最想做的一件</p><p><span class="md-done">- [x] 给植物浇水</span></p><br><p class="md-muted"><span class="md-hash">##</span> 碎碎念</p><p class="md-muted">今天的光，刚刚好。</p></div><div class="note-sample-bottom"><span class="tiny-dot"></span>你的 Markdown，仍是原来的样子。</div></div>
+  <div class="sync-copy"><p class="eyebrow">YOUR NOTE, STILL YOURS</p><h2 id="sync-title">一张日记。<br>两处入口。<br><span>同一份待办。</span></h2><p>无需搬家，也无需重写习惯。读取 Obsidian 核心「日记」的目录与日期格式，找到今天的 【TODO】，就从这里开始。</p><p>浮窗里的完成、编辑和新增，都会写回原日记。只调整展示顺序，不搬动 Markdown 中的任务结构。</p><div class="local-note"><svg><use href="#i-lock"/></svg><span>只在本机联动，不上传你的日记。</span></div></div>
+</div><div class="wrap flow-rail" aria-label="日记通过 Obsidian 插件在本机联动至原生浮窗"><div class="flow-node"><span class="flow-number">01</span><div><b>写在日记里</b><span>Markdown · 唯一数据源</span></div></div><div class="flow-connector"><span></span><svg><use href="#i-arrow"/></svg></div><div class="flow-node"><span class="flow-number">02</span><div><b>Obsidian 本地联动</b><span>读取今天 · 变化写回</span></div></div><div class="flow-connector second"><span></span><svg><use href="#i-arrow"/></svg></div><div class="flow-node"><span class="flow-number">03</span><div><b>轻轻浮在桌面</b><span>原生 macOS · 透明置顶</span></div></div></div></section>
+<section class="details-section wrap" aria-labelledby="details-title"><div class="details-heading"><p class="eyebrow">SMALL DETAILS, LESS FRICTION</p><h2 id="details-title">用起来，<span>就像顺手写下一行。</span></h2></div><div class="detail-list">
+  <article class="detail-row"><span class="detail-number">01 /</span><h3>想到下一步，就在这一条下面写。</h3><p>每条任务旁都留着一个 ＋。点击后直接在父任务下输入子任务，已有任务的层级继续清清楚楚。</p><span class="detail-sign" aria-hidden="true">＋</span></article>
+  <article class="detail-row"><span class="detail-number">02 /</span><h3>做完的事，落到底部，也留在眼前。</h3><p>已完成与已取消的任务始终显示在「已结束」。完成父任务只改变它自己的状态，子任务保留各自进度。</p><span class="detail-sign done-sign" aria-hidden="true">✓</span></article>
+  <article class="detail-row"><span class="detail-number">03 /</span><h3>有层次，也可以收一收。</h3><p>树状引导线连接父子任务。需要专注时，折叠子任务，或把整个浮窗收成一条轻巧的标题栏。</p><span class="detail-sign branch-sign" aria-hidden="true">└</span></article>
+  <article class="detail-row"><span class="detail-number">04 /</span><h3>随手改动，放心回到原文。</h3><p>双击文字编辑，用菜单切换五种状态。编辑时保留草稿与光标；遇到日记已被修改，会提示刷新，避免直接覆盖。</p><span class="detail-sign pen-sign" aria-hidden="true">✎</span></article>
+</div></section>
+<section class="install-section" id="install" aria-labelledby="install-title"><div class="wrap"><div class="install-heading"><div><p class="eyebrow">A PLACE FOR TODAY</p><h2 id="install-title">三步，<br>安放你的今天。</h2></div><div class="release-meta"><span class="release-pill"><span class="small-dot"></span> v1.2.0</span><p>macOS 13+ · Obsidian 1.8.7+<br>Apple Silicon 与 Intel 通用版本</p></div></div><ol class="install-steps"><li><span class="step-index">01</span><h3>下载并完整解压</h3><p>下载 <code>TodoGlass-1.2.0-macOS.zip</code>。完整解压安装包，保留其中的文件结构。</p><a class="step-link" data-link="download" data-ready-label="下载发布包 ↗" data-loading-label="发布包正在准备" href="#release-status" aria-disabled="true">发布包正在准备</a></li><li><span class="step-index">02</span><h3>选择你的仓库</h3><p>双击 <code>安装 TodoGlass.command</code>，选择 Obsidian 仓库文件夹。也可按仓库说明手动安装。</p><span class="step-bottom">日常使用无需 Node 或 Xcode</span></li><li><span class="step-index">03</span><h3>启用 TodoGlass</h3><p>在 Obsidian「设置 → 第三方插件」中启用 TodoGlass。让 Obsidian 保持运行，浮窗便会陪在桌面。</p><span class="step-bottom">开启你的第一份今日清单</span></li></ol><div class="install-footnote"><svg><use href="#i-code"/></svg><p>MIT 开源，可查看源码或自行构建。发布包中的原生程序为本机签名，尚未经过 Apple 公证；首次运行请参照仓库说明。</p><a data-link="repo" data-ready-label="查看仓库 ↗" data-loading-label="仓库正在发布" href="#release-status" aria-disabled="true">仓库正在发布</a></div></div></section>
+<section class="faq-section wrap" aria-labelledby="faq-title"><div class="faq-heading"><p class="eyebrow">BEFORE YOU MAKE ROOM</p><h2 id="faq-title">你可能还想知道。</h2><p>把边界说清楚，才用得踏实。</p></div><div class="faq-list">
+<details><summary>必须一直开着 Obsidian 吗？<span>＋</span></summary><p>需要。TodoGlass 通过 Obsidian 插件读写日记，浮窗不独立读取仓库文件。停止插件或退出 Obsidian 后，浮窗也会退出。</p></details>
+<details><summary>日记内容会上传到云端吗？<span>＋</span></summary><p>TodoGlass 的联动只发生在本机，不上传日记，也不提供云同步。介绍页中的交互演示只操作合成示例，不连接你的 Obsidian 仓库。</p></details>
+<details><summary>会自动把昨天没做完的任务带过来吗？<span>＋</span></summary><p>不会。跨午夜会自动切换到新一天，但不会自动迁移历史未完成任务。今天的清单，由你决定。跨日仍在编辑的草稿会保留，保存旧日期草稿时会拒绝写入并提示刷新。</p></details>
+<details><summary>我需要改变日记格式吗？<span>＋</span></summary><p>默认沿用 Obsidian 核心「日记」的目录、日期格式与模板。可识别 TODO、【TODO】、To-do、待办、待办事项等标题，也可配置自定义标题。只展示该区域的 Markdown checklist；普通段落不会自动变成任务。更多格式细节请查看源码仓库说明。</p></details>
+<details><summary>完成一个父任务，会连同子任务一起完成吗？<span>＋</span></summary><p>不会。每条任务保留各自的状态。已完成与已取消只在浮窗中被排到底部，不移动 Markdown 中的任务，也不改变父子关系。</p></details>
+<details><summary>哪些设备可以使用？需要额外权限吗？<span>＋</span></summary><p>支持 macOS 13+ 的 Apple Silicon 和 Intel Mac，以及 Obsidian 1.8.7+。这是桌面插件。日常使用无需辅助功能或录屏权限；原生程序已本机签名，但尚未经过 Apple 公证。</p></details>
+</div></section>
+<section class="closing-section wrap" aria-labelledby="closing-title"><div class="closing-mark" aria-hidden="true"><svg><use href="#i-mark"/></svg></div><p class="eyebrow">MAKE A LITTLE ROOM</p><h2 id="closing-title">给今天的事，<br><span>一个轻一点的位置。</span></h2><div class="closing-actions"><a class="button primary" data-link="download" data-ready-label="下载 TodoGlass" data-loading-label="下载准备中" href="#release-status" aria-disabled="true"><svg><use href="#i-download"/></svg><span>下载准备中</span></a><a class="button secondary" data-link="repo" data-ready-label="查看 GitHub 源码" data-loading-label="源码正在发布" href="#release-status" aria-disabled="true"><svg><use href="#i-code"/></svg><span>源码正在发布</span></a></div><p class="release-status" id="release-status" role="status">开源仓库与下载链接正在发布，请稍后再来。</p></section>
+</main>
+<footer class="site-footer wrap"><a class="brand footer-brand" href="#"><span class="brand-mark"><svg><use href="#i-mark"/></svg></span><span>TodoGlass<span class="brand-dot">.</span></span></a><span>一点专注，一点留白。</span><div><span>v1.2.0</span><span>MIT License</span><a data-link="repo" data-ready-label="Source ↗" data-loading-label="开源发布中" href="#release-status" aria-disabled="true">开源发布中</a></div></footer>
+</body>
+</html>

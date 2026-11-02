@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Node 24 / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Install public dependencies
+        run: npm ci --registry=https://registry.npmjs.org
+      - name: Check types
+        run: npm run typecheck
+      - name: Run automated tests
+        run: npm test
+      - name: Build Obsidian plugin
+        run: npm run build
+      - name: Build universal macOS helper
+        if: runner.os == 'macOS'
+        run: npm run build:native
+      - name: Verify native architectures and ad hoc signature
+        if: runner.os == 'macOS'
+        run: |
+          xcrun lipo -verify_arch arm64 x86_64 dist/macos/TodoGlass.app/Contents/MacOS/TodoGlass
+          codesign --verify --deep --strict dist/macos/TodoGlass.app
